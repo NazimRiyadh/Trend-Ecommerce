@@ -9,6 +9,9 @@ import errorHandler from './middleware/errorHandler.js';
 import authGuard from './middleware/authGuard.js';
 import ApiError from './utils/ApiError.js';
 import authRoutes from './modules/auth/auth.routes.js';
+import permissionRoutes from './modules/permission/permission.routes.js';
+import roleRoutes from './modules/role/role.routes.js';
+import userRoutes from './modules/user/user.routes.js';
 
 const app = express();
 
@@ -30,6 +33,9 @@ app.use(authGuard);
 
 // Routes
 app.use('/api/auth', authRoutes);
+app.use('/api/permissions', permissionRoutes);
+app.use('/api/roles', roleRoutes);
+app.use('/api/users', userRoutes);
 
 app.get('/health', (req, res) => {
   // We opt out health check
