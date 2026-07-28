@@ -1,12 +1,14 @@
-const express = require('express');
-const cors = require('cors');
-const helmet = require('helmet');
-const morgan = require('morgan');
-const compression = require('compression');
-const { StatusCodes } = require('http-status-codes');
+import express from 'express';
+import cors from 'cors';
+import helmet from 'helmet';
+import morgan from 'morgan';
+import compression from 'compression';
+import { StatusCodes } from 'http-status-codes';
 
-const errorHandler = require('./middleware/errorHandler');
-const ApiError = require('./utils/ApiError');
+import errorHandler from './middleware/errorHandler.js';
+import authGuard from './middleware/authGuard.js';
+import ApiError from './utils/ApiError.js';
+import authRoutes from './modules/auth/auth.routes.js';
 
 const app = express();
 
@@ -23,8 +25,15 @@ if (process.env.NODE_ENV === 'development') {
 // Serve static files for uploads
 app.use('/uploads', express.static('uploads'));
 
-// Routes (to be added)
+// Global Auth Guard (protects all routes by default, public routes opt out)
+app.use(authGuard);
+
+// Routes
+app.use('/api/auth', authRoutes);
+
 app.get('/health', (req, res) => {
+  // We opt out health check
+  req.skipAuth = true;
   res.status(StatusCodes.OK).json({ success: true, message: 'Server is running' });
 });
 
@@ -36,4 +45,4 @@ app.use((req, res, next) => {
 // Global error handler
 app.use(errorHandler);
 
-module.exports = app;
+export default app;

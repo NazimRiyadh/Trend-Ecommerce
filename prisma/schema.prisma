@@ -1,13 +1,255 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Get a free hosted Postgres database in seconds: `npx create-db`
-
 generator client {
-  provider = "prisma-client"
-  output   = "../src/generated/prisma"
+  provider = "prisma-client-js"
 }
 
 datasource db {
   provider = "postgresql"
+}
+
+// ============ AUTH & ACCESS CONTROL ============
+
+model User {
+  id           String   @id @default(uuid())
+  name         String
+  email        String   @unique
+  password     String // bcrypt hash, NEVER returned
+  phone        String?
+  gender       String? // enum: male, female, other
+  avatar       String? // media reference
+  roleId       String // required, never defaulted (§5.4)
+  role         Role     @relation(fields: [roleId], references: [id])
+  isActive     Boolean  @default(true)
+  refreshToken String? // stored for revocation (§5.1)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  // Relations
+  uploadedMedia Media[] @relation("UploadedBy")
+}
+
+model Role {
+  id          String   @id @default(uuid())
+  name        String   @unique
+  description String?
+  status      String   @default("active") // active, inactive
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  users       User[]
+  permissions RolePermission[]
+}
+
+model PermissionGroup {
+  id          String   @id @default(uuid())
+  name        String   @unique // e.g., "product"
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  permissions Permission[]
+}
+
+model Permission {
+  id          String          @id @default(uuid())
+  name        String          @unique // e.g., "product:create" — enforced unique at DB level
+  description String?
+  groupId     String
+  group       PermissionGroup @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+
+  roles RolePermission[]
+}
+
+model RolePermission {
+  roleId       String
+  permissionId String
+  role         Role       @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  permission   Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+
+  @@id([roleId, permissionId])
+}
+
+// ============ MEDIA ============
+
+model Media {
+  id           String   @id @default(uuid())
+  fileName     String // original name
+  storedPath   String // where it lives on disk
+  publicUrl    String // URL the frontend displays
+  mimeType     String // e.g., image/jpeg
+  type         String // "image" or "video" — for filtering
+  size         Int // bytes
+  width        Int? // image dimensions
+  height       Int?
+  thumbnailUrl String? // generated small version
+  altText      String?
+  title        String?
+  uploadedById String
+  uploadedBy   User     @relation("UploadedBy", fields: [uploadedById], references: [id])
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  // Relations
+  productMedia ProductMedia[]
+}
+
+// ============ CATEGORY ============
+
+model Category {
+  id          String     @id @default(uuid())
+  name        String
+  slug        String     @unique // DB-enforced unique (§5.6)
+  description String?
+  imageId     String? // media reference
+  parentId    String? // self-referential for nesting
+  parent      Category?  @relation("CategoryTree", fields: [parentId], references: [id])
+  children    Category[] @relation("CategoryTree")
+  isActive    Boolean    @default(true)
+  sortOrder   Int        @default(0)
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  products ProductCategory[]
+}
+
+// ============ BRAND ============
+
+model Brand {
+  id          String   @id @default(uuid())
+  name        String   @unique
+  slug        String   @unique
+  logoId      String? // media reference
+  status      String   @default("active")
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  products Product[]
+}
+
+// ============ ATTRIBUTE ============
+
+model Attribute {
+  id        String   @id @default(uuid())
+  name      String   @unique
+  slug      String   @unique
+  type      String // dropdown, radio, checkbox, colour_swatch, image_swatch
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  values   AttributeValue[]
+  products ProductAttribute[]
+}
+
+model AttributeValue {
+  id             String    @id @default(uuid())
+  value          String
+  slug           String
+  referenceValue String? // hex code for colour, media ref for image
+  attributeId    String
+  attribute      Attribute @relation(fields: [attributeId], references: [id], onDelete: Cascade)
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  variantValues VariantAttributeValue[]
+  productMedia  ProductMedia[]
+
+  @@unique([attributeId, slug]) // value unique within its attribute (§5.8)
+}
+
+// ============ PRODUCT ============
+
+model Product {
+  id               String   @id @default(uuid())
+  name             String
+  slug             String   @unique // DB-enforced
+  sku              String   @unique // DB-enforced
+  shortDescription String?
+  longDescription  String?
+  hasVariants      Boolean  @default(false) // simple vs variable flag
+  price            Decimal? @db.Decimal(10, 2) // only when hasVariants=false
+  salePrice        Decimal? @db.Decimal(10, 2)
+  stock            Int? // only when hasVariants=false
+  stockStatus      String? // in_stock, out_of_stock, low_stock (derived)
+  weight           Decimal? @db.Decimal(10, 2)
+  isActive         Boolean  @default(true)
+  isFeatured       Boolean  @default(false)
+  sortOrder        Int      @default(0)
+  brandId          String?
+  brand            Brand?   @relation(fields: [brandId], references: [id])
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  categories ProductCategory[]
+  media      ProductMedia[]
+  variants   ProductVariant[]
+  attributes ProductAttribute[]
+}
+
+model ProductCategory {
+  productId  String
+  categoryId String
+  product    Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  category   Category @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+
+  @@id([productId, categoryId])
+}
+
+model ProductAttribute {
+  productId   String
+  attributeId String
+  product     Product   @relation(fields: [productId], references: [id], onDelete: Cascade)
+  attribute   Attribute @relation(fields: [attributeId], references: [id], onDelete: Restrict)
+
+  @@id([productId, attributeId])
+}
+
+model ProductVariant {
+  id                String   @id @default(uuid())
+  productId         String
+  product           Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  sku               String   @unique // unique across ALL variants (§5.9)
+  price             Decimal  @db.Decimal(10, 2)
+  salePrice         Decimal? @db.Decimal(10, 2)
+  stock             Int      @default(0)
+  stockStatus       String   @default("in_stock")
+  lowStockThreshold Int      @default(5)
+  weight            Decimal? @db.Decimal(10, 2)
+  isActive          Boolean  @default(true)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  attributeValues VariantAttributeValue[]
+  media           ProductMedia[]
+
+  // Prevent duplicate attribute combinations per product
+  // (enforced in application code via transaction)
+}
+
+model VariantAttributeValue {
+  variantId        String
+  attributeValueId String
+  variant          ProductVariant @relation(fields: [variantId], references: [id], onDelete: Cascade)
+  attributeValue   AttributeValue @relation(fields: [attributeValueId], references: [id], onDelete: Restrict)
+
+  @@id([variantId, attributeValueId])
+}
+
+model ProductMedia {
+  id               String          @id @default(uuid())
+  mediaId          String
+  media            Media           @relation(fields: [mediaId], references: [id], onDelete: Restrict)
+  productId        String?
+  product          Product?        @relation(fields: [productId], references: [id], onDelete: Cascade)
+  variantId        String?
+  variant          ProductVariant? @relation(fields: [variantId], references: [id], onDelete: Cascade)
+  attributeValueId String?
+  attributeValue   AttributeValue? @relation(fields: [attributeValueId], references: [id])
+  isThumbnail      Boolean         @default(false)
+  isGallery        Boolean         @default(false)
+  sortOrder        Int             @default(0)
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
 }

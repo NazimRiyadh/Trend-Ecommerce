@@ -1,4 +1,4 @@
-const getPagination = (page, limit) => {
+export const getPagination = (page, limit) => {
   const pageNumber = parseInt(page, 10) || 1;
   const limitNumber = parseInt(limit, 10) || 10;
   
@@ -7,7 +7,7 @@ const getPagination = (page, limit) => {
   return { limit: limitNumber, skip, page: pageNumber };
 };
 
-const getPagingData = (totalItems, page, limit) => {
+export const getPagingData = (totalItems, page, limit) => {
   const totalPages = Math.ceil(totalItems / limit);
   
   return {
@@ -16,9 +16,4 @@ const getPagingData = (totalItems, page, limit) => {
     currentPage: page,
     itemsPerPage: limit
   };
-};
-
-module.exports = {
-  getPagination,
-  getPagingData
 };

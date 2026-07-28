@@ -10,4 +10,4 @@ const slugify = (text) => {
     .replace(/-+$/, ''); // Trim - from end of text
 };
 
-module.exports = slugify;
+export default slugify;

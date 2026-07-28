@@ -1,9 +1,6 @@
-const multer = require('multer');
-const ApiError = require('../utils/ApiError');
-const { StatusCodes } = require('http-status-codes');
-const config = require('../config');
-const fs = require('fs');
-const path = require('path');
+import multer from 'multer';
+import config from '../config/index.js';
+import fs from 'fs';
 
 // Ensure upload directory exists
 if (!fs.existsSync(config.upload.dir)) {
@@ -20,4 +17,4 @@ const upload = multer({
   }
 });
 
-module.exports = upload;
+export default upload;

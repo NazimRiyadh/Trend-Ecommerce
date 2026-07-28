@@ -2,6 +2,7 @@
   "name": "trendcommerce",
   "version": "1.0.0",
   "description": "\"# Trend-Ecommerce\"",
+  "type": "module",
   "main": "index.js",
   "scripts": {
     "start": "node src/server.js",
@@ -22,6 +23,7 @@
   },
   "homepage": "https://github.com/NazimRiyadh/Trend-Ecommerce#readme",
   "dependencies": {
+    "@prisma/adapter-pg": "^7.9.1",
     "@prisma/client": "^7.9.1",
     "bcrypt": "^6.0.0",
     "compression": "^1.8.1",
@@ -35,6 +37,7 @@
     "jsonwebtoken": "^9.0.3",
     "morgan": "^1.11.0",
     "multer": "^2.2.0",
+    "pg": "^8.22.0",
     "sharp": "^0.35.3",
     "swagger-jsdoc": "^6.3.0",
     "swagger-ui-express": "^5.0.1"

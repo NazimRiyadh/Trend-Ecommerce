@@ -5,3 +5,15 @@ node_modules
 /src/generated/prisma
 node_modules
 uploads/
+
+# AI Assistant Context
+.agents/
+.claude/
+.windsurf/
+skills-lock.json
+
+# Project Documentation & Reference Files
+*.pdf
+assignment_text.txt
+implementation_plan.md
+generate_pdf.py
