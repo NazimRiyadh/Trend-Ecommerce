@@ -1,20 +1,22 @@
-import { StatusCodes } from 'http-status-codes';
-import ApiError from '../../utils/ApiError.js';
-import prisma from '../../config/prisma.js';
-import { getPagination, getPagingData } from '../../utils/pagination.js';
+import { StatusCodes } from "http-status-codes";
+import ApiError from "../../utils/ApiError.js";
+import prisma from "../../config/prisma.js";
+import { getPagination, getPagingData } from "../../utils/pagination.js";
 
 const createRole = async (data) => {
   const { name, description, status, permissionIds, grantAll } = data;
 
   const existingRole = await prisma.role.findUnique({ where: { name } });
   if (existingRole) {
-    throw new ApiError(StatusCodes.CONFLICT, 'Role name already exists');
+    throw new ApiError(StatusCodes.CONFLICT, "Role name already exists");
   }
 
   let finalPermissionIds = permissionIds || [];
   if (grantAll) {
-    const allPermissions = await prisma.permission.findMany({ select: { id: true } });
-    finalPermissionIds = allPermissions.map(p => p.id);
+    const allPermissions = await prisma.permission.findMany({
+      select: { id: true },
+    });
+    finalPermissionIds = allPermissions.map((p) => p.id);
   }
 
   return prisma.$transaction(async (tx) => {
@@ -27,7 +29,7 @@ const createRole = async (data) => {
     });
 
     if (finalPermissionIds.length > 0) {
-      const rolePermissionsData = finalPermissionIds.map(id => ({
+      const rolePermissionsData = finalPermissionIds.map((id) => ({
         roleId: role.id,
         permissionId: id,
       }));
@@ -40,8 +42,8 @@ const createRole = async (data) => {
       where: { id: role.id },
       include: {
         permissions: {
-          include: { permission: true }
-        }
+          include: { permission: true },
+        },
       },
     });
   });
@@ -51,12 +53,14 @@ const queryRoles = async (filter, options) => {
   const { page, limit } = getPagination(options.page, options.limit);
   const { search } = filter;
 
-  const where = search ? {
-    OR: [
-      { name: { contains: search, mode: 'insensitive' } },
-      { description: { contains: search, mode: 'insensitive' } }
-    ]
-  } : {};
+  const where = search
+    ? {
+        OR: [
+          { name: { contains: search, mode: "insensitive" } },
+          { description: { contains: search, mode: "insensitive" } },
+        ],
+      }
+    : {};
 
   const [roles, total] = await Promise.all([
     prisma.role.findMany({
@@ -65,12 +69,12 @@ const queryRoles = async (filter, options) => {
       take: limit,
       include: {
         _count: {
-          select: { users: true }
-        }
+          select: { users: true },
+        },
       },
-      orderBy: { createdAt: 'desc' }
+      orderBy: { createdAt: "desc" },
     }),
-    prisma.role.count({ where })
+    prisma.role.count({ where }),
   ]);
 
   return getPagingData(total, options.page, options.limit, roles);
@@ -83,15 +87,15 @@ const getRoleById = async (id) => {
       permissions: {
         include: {
           permission: {
-            include: { group: true }
-          }
-        }
-      }
+            include: { group: true },
+          },
+        },
+      },
     },
   });
 
   if (!role) {
-    throw new ApiError(StatusCodes.NOT_FOUND, 'Role not found');
+    throw new ApiError(StatusCodes.NOT_FOUND, "Role not found");
   }
 
   return role;
@@ -104,7 +108,7 @@ const updateRole = async (id, updateBody) => {
   if (name && name !== role.name) {
     const existingRole = await prisma.role.findUnique({ where: { name } });
     if (existingRole) {
-      throw new ApiError(StatusCodes.CONFLICT, 'Role name already exists');
+      throw new ApiError(StatusCodes.CONFLICT, "Role name already exists");
     }
   }
 
@@ -121,13 +125,21 @@ const updateRole = async (id, updateBody) => {
     if (grantAll !== undefined || permissionIds !== undefined) {
       let finalPermissionIds = permissionIds || [];
       if (grantAll) {
-        const allPermissions = await tx.permission.findMany({ select: { id: true } });
-        finalPermissionIds = allPermissions.map(p => p.id);
+        const allPermissions = await tx.permission.findMany({
+          select: { id: true },
+        });
+        finalPermissionIds = allPermissions.map((p) => p.id);
       }
 
-      const currentPermissionIds = role.permissions.map(rp => rp.permissionId);
-      const toRemove = currentPermissionIds.filter(pid => !finalPermissionIds.includes(pid));
-      const toAdd = finalPermissionIds.filter(pid => !currentPermissionIds.includes(pid));
+      const currentPermissionIds = role.permissions.map(
+        (rp) => rp.permissionId,
+      );
+      const toRemove = currentPermissionIds.filter(
+        (pid) => !finalPermissionIds.includes(pid),
+      );
+      const toAdd = finalPermissionIds.filter(
+        (pid) => !currentPermissionIds.includes(pid),
+      );
 
       // Safety Guard: Check if we are removing critical permissions from the ONLY role that has them
       if (toRemove.length > 0) {
@@ -135,15 +147,22 @@ const updateRole = async (id, updateBody) => {
           const otherRolesHoldingPermission = await tx.rolePermission.count({
             where: {
               permissionId: pid,
-              roleId: { not: id }
-            }
+              roleId: { not: id },
+            },
           });
-          
+
           if (otherRolesHoldingPermission === 0) {
-            const perm = await tx.permission.findUnique({ where: { id: pid }});
+            const perm = await tx.permission.findUnique({ where: { id: pid } });
             // Protect critical permissions like role:update
-            if (['role:update', 'permission:update', 'user:update'].includes(perm.name)) {
-              throw new ApiError(StatusCodes.CONFLICT, `Cannot remove '${perm.name}' as this is the only role holding it`);
+            if (
+              ["role:update", "permission:update", "user:update"].includes(
+                perm.name,
+              )
+            ) {
+              throw new ApiError(
+                StatusCodes.CONFLICT,
+                `Cannot remove '${perm.name}' as this is the only role holding it`,
+              );
             }
           }
         }
@@ -153,14 +172,14 @@ const updateRole = async (id, updateBody) => {
         await tx.rolePermission.deleteMany({
           where: {
             roleId: id,
-            permissionId: { in: toRemove }
-          }
+            permissionId: { in: toRemove },
+          },
         });
       }
 
       if (toAdd.length > 0) {
         await tx.rolePermission.createMany({
-          data: toAdd.map(pid => ({ roleId: id, permissionId: pid }))
+          data: toAdd.map((pid) => ({ roleId: id, permissionId: pid })),
         });
       }
     }
@@ -169,8 +188,8 @@ const updateRole = async (id, updateBody) => {
       where: { id },
       include: {
         permissions: {
-          include: { permission: true }
-        }
+          include: { permission: true },
+        },
       },
     });
   });
@@ -178,11 +197,14 @@ const updateRole = async (id, updateBody) => {
 
 const deleteRole = async (id) => {
   const role = await getRoleById(id);
-  
+
   // Refuse if users hold it
   const userCount = await prisma.user.count({ where: { roleId: id } });
   if (userCount > 0) {
-    throw new ApiError(StatusCodes.CONFLICT, `Cannot delete role. It is currently assigned to ${userCount} user(s).`);
+    throw new ApiError(
+      StatusCodes.CONFLICT,
+      `Cannot delete role. It is currently assigned to ${userCount} user(s).`,
+    );
   }
 
   await prisma.role.delete({

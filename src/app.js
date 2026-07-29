@@ -12,6 +12,7 @@ import authRoutes from './modules/auth/auth.routes.js';
 import permissionRoutes from './modules/permission/permission.routes.js';
 import roleRoutes from './modules/role/role.routes.js';
 import userRoutes from './modules/user/user.routes.js';
+import mediaRoutes from './modules/media/media.routes.js';
 
 const app = express();
 
@@ -36,6 +37,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/permissions', permissionRoutes);
 app.use('/api/roles', roleRoutes);
 app.use('/api/users', userRoutes);
+app.use('/api/media', mediaRoutes);
 
 app.get('/health', (req, res) => {
   // We opt out health check
