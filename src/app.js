@@ -13,6 +13,9 @@ import permissionRoutes from './modules/permission/permission.routes.js';
 import roleRoutes from './modules/role/role.routes.js';
 import userRoutes from './modules/user/user.routes.js';
 import mediaRoutes from './modules/media/media.routes.js';
+import categoryRoutes from './modules/category/category.routes.js';
+import brandRoutes from './modules/brand/brand.routes.js';
+import attributeRoutes from './modules/attribute/attribute.routes.js';
 
 const app = express();
 
@@ -38,6 +41,9 @@ app.use('/api/permissions', permissionRoutes);
 app.use('/api/roles', roleRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/media', mediaRoutes);
+app.use('/api/categories', categoryRoutes);
+app.use('/api/brands', brandRoutes);
+app.use('/api/attributes', attributeRoutes);
 
 app.get('/health', (req, res) => {
   // We opt out health check
