@@ -16,6 +16,7 @@ import mediaRoutes from './modules/media/media.routes.js';
 import categoryRoutes from './modules/category/category.routes.js';
 import brandRoutes from './modules/brand/brand.routes.js';
 import attributeRoutes from './modules/attribute/attribute.routes.js';
+import productRoutes from './modules/product/product.routes.js';
 
 const app = express();
 
@@ -44,6 +45,7 @@ app.use('/api/media', mediaRoutes);
 app.use('/api/categories', categoryRoutes);
 app.use('/api/brands', brandRoutes);
 app.use('/api/attributes', attributeRoutes);
+app.use('/api/products', productRoutes);
 
 app.get('/health', (req, res) => {
   // We opt out health check
