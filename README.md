@@ -6,22 +6,20 @@ The backend uses Node.js, Express, Prisma, and PostgreSQL. The dashboard uses Re
 
 ## Links
 
-| Resource | URL |
-| --- | --- |
-| Live application | `https://YOUR-RENDER-URL.onrender.com` |
-| Live Swagger documentation | `https://YOUR-RENDER-URL.onrender.com/api-docs` |
-| GitHub repository | https://github.com/NazimRiyadh/Trend-Ecommerce |
-| Local Swagger documentation | http://localhost:5000/api-docs |
-
-> **Required before submission:** replace `YOUR-RENDER-URL` with the exact Render service URL in both live links.
+| Resource                    | URL                                            |
+| --------------------------- | ---------------------------------------------- |
+| Live application            | https://trendcommerce.onrender.c               |
+| Live Swagger documentation  | https://trendcommerce.onrender.com/api-docs    |
+| GitHub repository           | https://github.com/NazimRiyadh/Trend-Ecommerce |
+| Local Swagger documentation | http://localhost:5000/api-docs                 |
 
 ## Seeded Account Credentials
 
 Run `npm run seed` before using these accounts.
 
-| Account | Email | Password | Access |
-| --- | --- | --- | --- |
-| Super Admin | `admin@trendcommerce.com` | `admin123` | Full access to all modules and permissions |
+| Account         | Email                       | Password     | Access                                                                     |
+| --------------- | --------------------------- | ------------ | -------------------------------------------------------------------------- |
+| Super Admin     | `admin@trendcommerce.com`   | `admin123`   | Full access to all modules and permissions                                 |
 | Catalog Manager | `catalog@trendcommerce.com` | `catalog123` | Catalog modules only; users, roles, and permissions return `403 Forbidden` |
 
 The Catalog Manager is deliberately restricted so API-level permission enforcement can be reviewed quickly.
@@ -45,18 +43,18 @@ The Catalog Manager is deliberately restricted so API-level permission enforceme
 
 ## Technology Stack
 
-| Area | Technology |
-| --- | --- |
-| Runtime | Node.js 22 |
-| Backend | Express 5, JavaScript ES modules |
-| Database | PostgreSQL |
-| ORM and migrations | Prisma 7 |
-| Authentication | JSON Web Tokens, HttpOnly cookies, bcrypt |
-| Validation | Joi |
-| Media | Multer, file-type, Sharp, Cloudinary |
-| API documentation | swagger-jsdoc, Swagger UI Express |
-| Frontend | React 19, Vite, React Router, Axios |
-| UI | Tailwind CSS, shadcn/ui, Radix UI |
+| Area               | Technology                                |
+| ------------------ | ----------------------------------------- |
+| Runtime            | Node.js 22                                |
+| Backend            | Express 5, JavaScript ES modules          |
+| Database           | PostgreSQL                                |
+| ORM and migrations | Prisma 7                                  |
+| Authentication     | JSON Web Tokens, HttpOnly cookies, bcrypt |
+| Validation         | Joi                                       |
+| Media              | Multer, file-type, Sharp, Cloudinary      |
+| API documentation  | swagger-jsdoc, Swagger UI Express         |
+| Frontend           | React 19, Vite, React Router, Axios       |
+| UI                 | Tailwind CSS, shadcn/ui, Radix UI         |
 
 ## Project Structure
 
@@ -186,40 +184,40 @@ Set `NODE_ENV=production` when testing the combined deployment. Express then ser
 
 Do not commit `.env` or real credentials.
 
-| Variable | Required | Description | Example |
-| --- | --- | --- | --- |
-| `PORT` | No | Express port; defaults to `5000` | `5000` |
-| `NODE_ENV` | Yes | Runtime mode | `development` |
-| `DATABASE_URL` | Yes | PostgreSQL connection URL | `postgresql://postgres:password@localhost:5432/trendcommerce` |
-| `JWT_ACCESS_SECRET` | Yes | Access-token signing secret | A long random value |
-| `JWT_REFRESH_SECRET` | Yes | Separate refresh-token signing secret | A different long random value |
-| `JWT_ACCESS_EXPIRY` | No | Access-token lifetime | `15m` |
-| `JWT_REFRESH_EXPIRY` | No | Refresh-token lifetime | `30d` |
-| `CORS_ORIGIN` | Yes | Allowed frontend origin(s), comma-separated | `http://localhost:5173` |
-| `VITE_API_URL` | Development only | Client API base; production defaults to `/api` | `http://localhost:5000/api` |
-| `UPLOAD_DIR` | No | Legacy/local upload fallback | `./uploads` |
-| `MAX_FILE_SIZE` | No | Maximum upload size in bytes | `10485760` |
-| `ALLOWED_MIME_TYPES` | No | Comma-separated media allowlist | `image/jpeg,image/png,image/webp,image/gif,video/mp4` |
-| `CLOUDINARY_CLOUD_NAME` | Yes | Cloudinary cloud name | Your cloud name |
-| `CLOUDINARY_API_KEY` | Yes | Cloudinary API key | Your API key |
-| `CLOUDINARY_API_SECRET` | Yes | Cloudinary API secret | Your API secret |
-| `CLOUDINARY_FOLDER` | No | Cloudinary folder prefix | `trendcommerce` |
+| Variable                | Required         | Description                                    | Example                                                       |
+| ----------------------- | ---------------- | ---------------------------------------------- | ------------------------------------------------------------- |
+| `PORT`                  | No               | Express port; defaults to `5000`               | `5000`                                                        |
+| `NODE_ENV`              | Yes              | Runtime mode                                   | `development`                                                 |
+| `DATABASE_URL`          | Yes              | PostgreSQL connection URL                      | `postgresql://postgres:password@localhost:5432/trendcommerce` |
+| `JWT_ACCESS_SECRET`     | Yes              | Access-token signing secret                    | A long random value                                           |
+| `JWT_REFRESH_SECRET`    | Yes              | Separate refresh-token signing secret          | A different long random value                                 |
+| `JWT_ACCESS_EXPIRY`     | No               | Access-token lifetime                          | `15m`                                                         |
+| `JWT_REFRESH_EXPIRY`    | No               | Refresh-token lifetime                         | `30d`                                                         |
+| `CORS_ORIGIN`           | Yes              | Allowed frontend origin(s), comma-separated    | `http://localhost:5173`                                       |
+| `VITE_API_URL`          | Development only | Client API base; production defaults to `/api` | `http://localhost:5000/api`                                   |
+| `UPLOAD_DIR`            | No               | Legacy/local upload fallback                   | `./uploads`                                                   |
+| `MAX_FILE_SIZE`         | No               | Maximum upload size in bytes                   | `10485760`                                                    |
+| `ALLOWED_MIME_TYPES`    | No               | Comma-separated media allowlist                | `image/jpeg,image/png,image/webp,image/gif,video/mp4`         |
+| `CLOUDINARY_CLOUD_NAME` | Yes              | Cloudinary cloud name                          | Your cloud name                                               |
+| `CLOUDINARY_API_KEY`    | Yes              | Cloudinary API key                             | Your API key                                                  |
+| `CLOUDINARY_API_SECRET` | Yes              | Cloudinary API secret                          | Your API secret                                               |
+| `CLOUDINARY_FOLDER`     | No               | Cloudinary folder prefix                       | `trendcommerce`                                               |
 
 Use different values for `JWT_ACCESS_SECRET` and `JWT_REFRESH_SECRET`. Production secrets must be supplied by the hosting platform and never committed.
 
 ## Available Commands
 
-| Command | Purpose |
-| --- | --- |
-| `npm run dev` | Run the API with Nodemon |
-| `npm start` | Run the API with Node |
-| `npm run migrate:deploy` | Apply committed Prisma migrations |
-| `npm run seed` | Seed permissions, roles, users, and sample data |
-| `npm run lint` | Lint the project |
-| `npm run format` | Format source with Prettier |
-| `npm --prefix client run dev` | Run the Vite development server |
-| `npm --prefix client run build` | Build the dashboard for production |
-| `npm --prefix client run lint` | Lint the dashboard |
+| Command                         | Purpose                                         |
+| ------------------------------- | ----------------------------------------------- |
+| `npm run dev`                   | Run the API with Nodemon                        |
+| `npm start`                     | Run the API with Node                           |
+| `npm run migrate:deploy`        | Apply committed Prisma migrations               |
+| `npm run seed`                  | Seed permissions, roles, users, and sample data |
+| `npm run lint`                  | Lint the project                                |
+| `npm run format`                | Format source with Prettier                     |
+| `npm --prefix client run dev`   | Run the Vite development server                 |
+| `npm --prefix client run build` | Build the dashboard for production              |
+| `npm --prefix client run lint`  | Lint the dashboard                              |
 
 ## API Documentation
 
@@ -319,17 +317,17 @@ Slugs are normalized to lowercase. Collision-safe suffixes are generated where d
 
 The assignment requires each module to be marked **Complete**, **Partial**, or **Not attempted**. These statuses cover both API and dashboard behavior.
 
-| # | Module | Status | Implemented scope |
-| ---: | --- | --- | --- |
-| 1 | Authentication | **Complete** | Login, identical credential errors, access token, HttpOnly refresh cookie, rotation, session, inactive-user checks, public real logout, transparent frontend refresh |
-| 2 | Permission | **Complete** | Groups, generated lowercase actions, custom actions, grouped/searchable/paginated list, CRUD, duplicate protection |
-| 3 | Role | **Complete** | Create with permissions, list/read/update, synchronization, grant-all, user count, in-use deletion guard, last-manager safety guard |
-| 4 | User | **Complete** | Required role, search/filter/pagination, CRUD, activation/deactivation, immediate role changes, self-escalation prevention, password omission |
-| 5 | Media | **Complete** | Multiple upload, content-based MIME validation, Cloudinary storage, thumbnails, filtering, metadata editing, safe deletion |
-| 6 | Category | **Complete** | Root/child CRUD, recursive tree, parent selection, collision-safe slugs, cycle prevention, dependency-aware deletion |
-| 7 | Brand | **Complete** | CRUD, search/pagination, normalized uniqueness, description/status, optional media-library logo, deletion guard |
-| 8 | Attribute | **Complete** | Types, values, uniqueness within an attribute, CRUD, variant-usage protection |
-| 9 | Product | **Partial** | Backend supports simple/variable products, transactions, variants, combinations, categories, brands, media joins, thumbnails, filters, sorting and pagination. Dashboard supports creation and basic editing; advanced edit-time variant/media synchronization is incomplete. |
+|   # | Module         | Status       | Implemented scope                                                                                                                                                                                                                                                             |
+| --: | -------------- | ------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+|   1 | Authentication | **Complete** | Login, identical credential errors, access token, HttpOnly refresh cookie, rotation, session, inactive-user checks, public real logout, transparent frontend refresh                                                                                                          |
+|   2 | Permission     | **Complete** | Groups, generated lowercase actions, custom actions, grouped/searchable/paginated list, CRUD, duplicate protection                                                                                                                                                            |
+|   3 | Role           | **Complete** | Create with permissions, list/read/update, synchronization, grant-all, user count, in-use deletion guard, last-manager safety guard                                                                                                                                           |
+|   4 | User           | **Complete** | Required role, search/filter/pagination, CRUD, activation/deactivation, immediate role changes, self-escalation prevention, password omission                                                                                                                                 |
+|   5 | Media          | **Complete** | Multiple upload, content-based MIME validation, Cloudinary storage, thumbnails, filtering, metadata editing, safe deletion                                                                                                                                                    |
+|   6 | Category       | **Complete** | Root/child CRUD, recursive tree, parent selection, collision-safe slugs, cycle prevention, dependency-aware deletion                                                                                                                                                          |
+|   7 | Brand          | **Complete** | CRUD, search/pagination, normalized uniqueness, description/status, optional media-library logo, deletion guard                                                                                                                                                               |
+|   8 | Attribute      | **Complete** | Types, values, uniqueness within an attribute, CRUD, variant-usage protection                                                                                                                                                                                                 |
+|   9 | Product        | **Partial**  | Backend supports simple/variable products, transactions, variants, combinations, categories, brands, media joins, thumbnails, filters, sorting and pagination. Dashboard supports creation and basic editing; advanced edit-time variant/media synchronization is incomplete. |
 
 No module was completely unattempted.
 
@@ -365,19 +363,6 @@ First seed: npm run seed
 Start:      npm start
 Health:     /health
 ```
-
-## Submission Checklist
-
-- [ ] GitHub repository is public, or the reviewer account has been added.
-- [x] Full source and incremental commit history are present.
-- [x] Prisma migrations are committed.
-- [x] Exact migration and seed commands are documented.
-- [x] Swagger covers the implemented routes.
-- [ ] Live application and Swagger placeholders have been replaced.
-- [x] Seeded credentials are documented.
-- [x] Token strategy and design decisions are documented.
-- [x] Module statuses and known issues are documented honestly.
-- [ ] Live Super Admin and Catalog Manager logins have been verified.
 
 ## License
 
