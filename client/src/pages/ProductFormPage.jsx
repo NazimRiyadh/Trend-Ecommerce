@@ -53,7 +53,8 @@ export default function ProductFormPage() {
 
   // Variants
   const [selectedAttributes, setSelectedAttributes] = useState({}); // { attrId: [valueIds...] }
-  const [variants, setVariants] = useState([]); // [{ sku, price, salePrice, stock, attributeValues: { attrId: valId }, mediaId }]
+  const [variants, setVariants] = useState([]);
+  const [loadedProduct, setLoadedProduct] = useState(null); // [{ sku, price, salePrice, stock, attributeValues: { attrId: valId }, mediaId }]
 
   useEffect(() => {
     fetchFormData();
@@ -93,6 +94,7 @@ export default function ProductFormPage() {
     try {
       const { data } = await productApi.getById(id);
       const p = data.data;
+      setLoadedProduct(p);
       
       setName(p.name);
       setSlug(p.slug);
@@ -240,12 +242,49 @@ export default function ProductFormPage() {
       }
 
       if (isEditing) {
-        const updatePayload = { name, slug, sku, shortDescription, longDescription, isActive: active, brandId: brandId !== 'none' ? brandId : null, categoryIds: selectedCategoryIds };
-        if (!hasVariants) { updatePayload.price = parseFloat(price) || 0; updatePayload.salePrice = salePrice ? parseFloat(salePrice) : null; updatePayload.stock = parseInt(stock, 10) || 0; }
+        const updatePayload = {
+          name, slug, sku, shortDescription, longDescription,
+          isActive: active, hasVariants,
+          brandId: brandId !== 'none' ? brandId : null,
+          categoryIds: selectedCategoryIds
+        };
+        if (!hasVariants) {
+          updatePayload.price = parseFloat(price) || 0;
+          updatePayload.salePrice = salePrice ? parseFloat(salePrice) : null;
+          updatePayload.stock = parseInt(stock, 10) || 0;
+        }
         await productApi.update(id, updatePayload);
+
+        const oldMedia = loadedProduct?.media || [];
+        const oldMediaIds = new Set(oldMedia.map(m => m.mediaId));
+        const currentMediaIds = new Set(productMedia.map(m => m.mediaId));
+        for (const m of productMedia) {
+          if (oldMediaIds.has(m.mediaId)) {
+            await productApi.updateMedia(id, m.mediaId, { isThumbnail:m.isThumbnail, sortOrder:m.sortOrder });
+          } else {
+            await productApi.addMedia(id, { mediaId:m.mediaId, isThumbnail:m.isThumbnail, sortOrder:m.sortOrder });
+          }
+        }
+        for (const mediaId of oldMediaIds) {
+          if (!currentMediaIds.has(mediaId)) await productApi.deleteMedia(id, mediaId);
+        }
+
+        if (hasVariants) {
+          for (const v of variants) {
+            const variantPayload = {
+              sku:v.sku, price:parseFloat(v.price)||0,
+              salePrice:v.salePrice ? parseFloat(v.salePrice) : null,
+              stock:parseInt(v.stock,10)||0,
+              attributes:Object.values(v.attributeValues).map(attributeValueId => ({attributeValueId}))
+            };
+            if (v.id) await productApi.updateVariant(id, v.id, variantPayload);
+            else await productApi.addVariants(id, variantPayload);
+          }
+        }
       } else {
         await productApi.create(payload);
       }
+
       navigate('/products');
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to save product');
@@ -270,7 +309,7 @@ export default function ProductFormPage() {
       const next = prev.filter(m => m.mediaId !== mId);
       // Ensure one thumbnail remains if there are items
       if (next.length > 0 && !next.some(m => m.isThumbnail)) {
-        next[0].isThumbnail = true;
+        next[0] = { ...next[0], isThumbnail: true };
       }
       return next;
     });

@@ -1,0 +1,216 @@
+client/src/App.jsx:18: trailing whitespace.
+[32m+[m[41m  [m
+client/src/App.jsx:21: trailing whitespace.
+[32m+[m[41m  [m
+client/src/App.jsx:30: trailing whitespace.
+[32m+[m[41m        [m
+client/src/components/layout/DashboardLayout.jsx:4: trailing whitespace.
+[32m+[m[32mimport {[m[41m [m
+client/src/components/layout/DashboardLayout.jsx:5: trailing whitespace.
+[32m+[m[32m  LogOut,[m[41m [m
+client/src/components/layout/DashboardLayout.jsx:6: trailing whitespace.
+[32m+[m[32m  LayoutDashboard,[m[41m [m
+client/src/components/layout/DashboardLayout.jsx:7: trailing whitespace.
+[32m+[m[32m  ShieldCheck,[m[41m [m
+client/src/components/layout/DashboardLayout.jsx:8: trailing whitespace.
+[32m+[m[32m  Key,[m[41m [m
+client/src/components/layout/DashboardLayout.jsx:9: trailing whitespace.
+[32m+[m[32m  Users,[m[41m [m
+client/src/components/layout/DashboardLayout.jsx:10: trailing whitespace.
+[32m+[m[32m  Image,[m[41m [m
+client/src/components/layout/DashboardLayout.jsx:11: trailing whitespace.
+[32m+[m[32m  FolderTree,[m[41m [m
+client/src/components/layout/DashboardLayout.jsx:12: trailing whitespace.
+[32m+[m[32m  Tag,[m[41m [m
+client/src/components/layout/DashboardLayout.jsx:13: trailing whitespace.
+[32m+[m[32m  Layers,[m[41m [m
+client/src/components/layout/DashboardLayout.jsx:14: trailing whitespace.
+[32m+[m[32m  Package[m[41m [m
+client/src/components/layout/DashboardLayout.jsx:45: trailing whitespace.
+[32m+[m[41m        [m
+client/src/components/layout/DashboardLayout.jsx:56: trailing whitespace.
+[32m+[m[32m          <Button[m[41m [m
+client/src/components/layout/DashboardLayout.jsx:57: trailing whitespace.
+[32m+[m[32m            variant="ghost"[m[41m [m
+client/src/components/layout/DashboardLayout.jsx:58: trailing whitespace.
+[32m+[m[32m            size="sm"[m[41m [m
+client/src/components/layout/DashboardLayout.jsx:59: trailing whitespace.
+[32m+[m[32m            onClick={logout}[m[41m [m
+client/src/components/layout/DashboardLayout.jsx:77: trailing whitespace.
+[32m+[m[41m              [m
+client/src/components/layout/DashboardLayout.jsx:86: trailing whitespace.
+[32m+[m[32m                    isActive[m[41m [m
+client/src/components/layout/DashboardLayout.jsx:87: trailing whitespace.
+[32m+[m[32m                      ? 'bg-ink text-white shadow-sm font-semibold'[m[41m [m
+client/src/index.css:27: trailing whitespace.
+[32m+[m[41m    [m
+client/src/pages/AttributePage.jsx:126: trailing whitespace.
+[32m+[m[41m                [m
+client/src/pages/AttributePage.jsx:150: trailing whitespace.
+[32m+[m[32m                    <Input[m[41m [m
+client/src/pages/AttributePage.jsx:151: trailing whitespace.
+[32m+[m[32m                      placeholder="Value (e.g. Red, XL)"[m[41m [m
+client/src/pages/AttributePage.jsx:152: trailing whitespace.
+[32m+[m[32m                      required[m[41m [m
+client/src/pages/AttributePage.jsx:153: trailing whitespace.
+[32m+[m[32m                      value={v.value}[m[41m [m
+client/src/pages/AttributePage.jsx:154: trailing whitespace.
+[32m+[m[32m                      onChange={e => updateValue(i, 'value', e.target.value)}[m[41m [m
+client/src/pages/AttributePage.jsx:157: trailing whitespace.
+[32m+[m[32m                      <Input[m[41m [m
+client/src/pages/AttributePage.jsx:158: trailing whitespace.
+[32m+[m[32m                        placeholder={type === 'colour_swatch' ? "Hex code (e.g. #FF0000)" : "Media URL"}[m[41m [m
+client/src/pages/AttributePage.jsx:159: trailing whitespace.
+[32m+[m[32m                        value={v.referenceValue || ''}[m[41m [m
+client/src/pages/AttributePage.jsx:160: trailing whitespace.
+[32m+[m[32m                        onChange={e => updateValue(i, 'referenceValue', e.target.value)}[m[41m [m
+client/src/pages/BrandPage.jsx:127: trailing whitespace.
+[32m+[m[41m                [m
+client/src/pages/CategoryPage.jsx:15: trailing whitespace.
+[32m+[m[41m  [m
+client/src/pages/CategoryPage.jsx:36: trailing whitespace.
+[32m+[m[41m      [m
+client/src/pages/CategoryPage.jsx:148: trailing whitespace.
+[32m+[m[41m                [m
+client/src/pages/DashboardHomePage.jsx:4: trailing whitespace.
+[32m+[m[32mimport {[m[41m [m
+client/src/pages/DashboardHomePage.jsx:5: trailing whitespace.
+[32m+[m[32m  Package,[m[41m [m
+client/src/pages/DashboardHomePage.jsx:6: trailing whitespace.
+[32m+[m[32m  FolderTree,[m[41m [m
+client/src/pages/DashboardHomePage.jsx:7: trailing whitespace.
+[32m+[m[32m  Tag,[m[41m [m
+client/src/pages/DashboardHomePage.jsx:8: trailing whitespace.
+[32m+[m[32m  Layers,[m[41m [m
+client/src/pages/DashboardHomePage.jsx:9: trailing whitespace.
+[32m+[m[32m  Users,[m[41m [m
+client/src/pages/DashboardHomePage.jsx:10: trailing whitespace.
+[32m+[m[32m  ShieldCheck,[m[41m [m
+client/src/pages/DashboardHomePage.jsx:11: trailing whitespace.
+[32m+[m[32m  Key,[m[41m [m
+client/src/pages/DashboardHomePage.jsx:12: trailing whitespace.
+[32m+[m[32m  Image,[m[41m [m
+client/src/pages/DashboardHomePage.jsx:13: trailing whitespace.
+[32m+[m[32m  PlusCircle,[m[41m [m
+client/src/pages/MediaPage.jsx:16: trailing whitespace.
+[32m+[m[41m  [m
+client/src/pages/MediaPage.jsx:125: trailing whitespace.
+[32m+[m[32m          <Input[m[41m [m
+client/src/pages/MediaPage.jsx:126: trailing whitespace.
+[32m+[m[32m            placeholder="Search files..."[m[41m [m
+client/src/pages/MediaPage.jsx:127: trailing whitespace.
+[32m+[m[32m            value={search}[m[41m [m
+client/src/pages/MediaPage.jsx:128: trailing whitespace.
+[32m+[m[32m            onChange={handleSearch}[m[41m [m
+client/src/pages/MediaPage.jsx:140: trailing whitespace.
+[32m+[m[32m                <img[m[41m [m
+client/src/pages/MediaPage.jsx:141: trailing whitespace.
+[32m+[m[32m                  src={resolveMediaUrl(media.thumbnailUrl || media.publicUrl)}[m[41m [m
+client/src/pages/MediaPage.jsx:142: trailing whitespace.
+[32m+[m[32m                  alt={media.altText || media.fileName}[m[41m [m
+client/src/pages/MediaPage.jsx:150: trailing whitespace.
+[32m+[m[41m              [m
+client/src/pages/PermissionPage.jsx:53: trailing whitespace.
+[32m+[m[32m    setSelectedActions(prev =>[m[41m [m
+client/src/pages/PermissionPage.jsx:54: trailing whitespace.
+[32m+[m[32m      prev.includes(action)[m[41m [m
+client/src/pages/PermissionPage.jsx:63: trailing whitespace.
+[32m+[m[41m    [m
+client/src/pages/PermissionPage.jsx:108: trailing whitespace.
+[32m+[m[32m                <Input[m[41m [m
+client/src/pages/PermissionPage.jsx:109: trailing whitespace.
+[32m+[m[32m                  id="groupName"[m[41m [m
+client/src/pages/PermissionPage.jsx:110: trailing whitespace.
+[32m+[m[32m                  placeholder="e.g. product"[m[41m [m
+client/src/pages/PermissionPage.jsx:117: trailing whitespace.
+[32m+[m[32m                <Input[m[41m [m
+client/src/pages/PermissionPage.jsx:118: trailing whitespace.
+[32m+[m[32m                  id="description"[m[41m [m
+client/src/pages/PermissionPage.jsx:119: trailing whitespace.
+[32m+[m[32m                  placeholder="e.g. Manage product catalog"[m[41m [m
+client/src/pages/PermissionPage.jsx:131: trailing whitespace.
+[32m+[m[32m                    <Checkbox[m[41m [m
+client/src/pages/PermissionPage.jsx:132: trailing whitespace.
+[32m+[m[32m                      id={`action-${action}`}[m[41m [m
+client/src/pages/PermissionPage.jsx:146: trailing whitespace.
+[32m+[m[32m              <Input[m[41m [m
+client/src/pages/PermissionPage.jsx:147: trailing whitespace.
+[32m+[m[32m                id="customAction"[m[41m [m
+client/src/pages/PermissionPage.jsx:148: trailing whitespace.
+[32m+[m[32m                placeholder="e.g. publish"[m[41m [m
+client/src/pages/ProductFormPage.jsx:41: trailing whitespace.
+[32m+[m[41m  [m
+client/src/pages/ProductFormPage.jsx:46: trailing whitespace.
+[32m+[m[41m  [m
+client/src/pages/ProductFormPage.jsx:74: trailing whitespace.
+[32m+[m[41m      [m
+client/src/pages/ProductFormPage.jsx:84: trailing whitespace.
+[32m+[m[41m      [m
+client/src/pages/ProductFormPage.jsx:96: trailing whitespace.
+[32m+[m[41m      [m
+client/src/pages/ProductFormPage.jsx:104: trailing whitespace.
+[32m+[m[41m      [m
+client/src/pages/ProductFormPage.jsx:108: trailing whitespace.
+[32m+[m[41m      [m
+client/src/pages/ProductFormPage.jsx:111: trailing whitespace.
+[32m+[m[41m      [m
+client/src/pages/ProductFormPage.jsx:142: trailing whitespace.
+[32m+[m[32m    setSelectedCategoryIds(prev =>[m[41m [m
+client/src/pages/ProductFormPage.jsx:151: trailing whitespace.
+[32m+[m[32m      const updated = current.includes(valId)[m[41m [m
+client/src/pages/ProductFormPage.jsx:154: trailing whitespace.
+[32m+[m[41m        [m
+client/src/pages/ProductFormPage.jsx:173: trailing whitespace.
+[32m+[m[32m    const arraysToMultiply = attrIds.map(attrId =>[m[41m [m
+client/src/pages/ProductFormPage.jsx:260: trailing whitespace.
+[32m+[m[32m    setProductMedia([...productMedia, {[m[41m [m
+client/src/pages/ProductFormPage.jsx:261: trailing whitespace.
+[32m+[m[32m      mediaId: mId,[m[41m [m
+client/src/pages/ProductFormPage.jsx:334: trailing whitespace.
+[32m+[m[41m                [m
+client/src/pages/ProductFormPage.jsx:349: trailing whitespace.
+[32m+[m[32m                  <textarea[m[41m [m
+client/src/pages/ProductFormPage.jsx:351: trailing whitespace.
+[32m+[m[32m                    value={longDescription}[m[41m [m
+client/src/pages/ProductFormPage.jsx:352: trailing whitespace.
+[32m+[m[32m                    onChange={e => setLongDescription(e.target.value)}[m[41m [m
+client/src/pages/ProductFormPage.jsx:417: trailing whitespace.
+[32m+[m[32m                      <Checkbox[m[41m [m
+client/src/pages/ProductFormPage.jsx:467: trailing whitespace.
+[32m+[m[32m                        <div[m[41m [m
+client/src/pages/ProductFormPage.jsx:468: trailing whitespace.
+[32m+[m[32m                          key={m.id}[m[41m [m
+client/src/pages/ProductFormPage.jsx:491: trailing whitespace.
+[32m+[m[41m            [m
+client/src/pages/ProductFormPage.jsx:506: trailing whitespace.
+[32m+[m[32m                              <Checkbox[m[41m [m
+client/src/pages/ProductFormPage.jsx:546: trailing whitespace.
+[32m+[m[41m                          [m
+client/src/pages/ProductListPage.jsx:15: trailing whitespace.
+[32m+[m[41m  [m
+client/src/pages/ProductListPage.jsx:57: trailing whitespace.
+[32m+[m[32m          <Input[m[41m [m
+client/src/pages/ProductListPage.jsx:58: trailing whitespace.
+[32m+[m[32m            placeholder="Search by name or SKU..."[m[41m [m
+client/src/pages/ProductListPage.jsx:59: trailing whitespace.
+[32m+[m[32m            value={search}[m[41m [m
+client/src/pages/ProductListPage.jsx:60: trailing whitespace.
+[32m+[m[32m            onChange={(e) => setSearch(e.target.value)}[m[41m [m
+client/src/pages/RolePage.jsx:17: trailing whitespace.
+[32m+[m[41m  [m
+client/src/pages/RolePage.jsx:77: trailing whitespace.
+[32m+[m[32m    setSelectedPermissions(prev =>[m[41m [m
+client/src/pages/RolePage.jsx:176: trailing whitespace.
+[32m+[m[32m                              <Checkbox[m[41m [m
+client/src/pages/RolePage.jsx:185: trailing whitespace.
+[32m+[m[32m                                    <Checkbox[m[41m [m
+src/modules/permission/permission.service.js:86: trailing whitespace.
+[32m+[m[41m    [m
+src/modules/permission/permission.service.js:112: trailing whitespace.
+[32m+[m[41m        [m
+src/modules/permission/permission.service.js:114: trailing whitespace.
+[32m+[m[41m        [m
+src/modules/permission/permission.service.js:137: trailing whitespace.
+[32m+[m[41m        [m
+src/modules/permission/permission.service.js:160: trailing whitespace.
+[32m+[m[41m    [m
