@@ -13,5 +13,11 @@ export default {
     dir: process.env.UPLOAD_DIR || './uploads',
     maxSize: parseInt(process.env.MAX_FILE_SIZE, 10) || 10485760,
     allowedMimeTypes: process.env.ALLOWED_MIME_TYPES ? process.env.ALLOWED_MIME_TYPES.split(',') : ['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'video/mp4'],
-  }
+  },
+  cloudinary: {
+    cloudName: process.env.CLOUDINARY_CLOUD_NAME,
+    apiKey: process.env.CLOUDINARY_API_KEY,
+    apiSecret: process.env.CLOUDINARY_API_SECRET,
+    folder: process.env.CLOUDINARY_FOLDER || 'trendcommerce',
+  },
 };

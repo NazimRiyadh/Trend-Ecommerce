@@ -40,6 +40,25 @@ const validateVariantAttributes = (variants) => {
   }
 };
 
+const getVariantCombinationKey = (attributeValueIds) =>
+  [...attributeValueIds].sort().join('-');
+
+const validateVariantCombinationsAgainstExisting = (existingVariants, newVariants) => {
+  const combinationSet = new Set(
+    existingVariants.map((v) =>
+      getVariantCombinationKey(v.attributeValues.map((av) => av.attributeValueId)),
+    ),
+  );
+
+  for (const variant of newVariants) {
+    const key = getVariantCombinationKey(variant.attributes.map((a) => a.attributeValueId));
+    if (combinationSet.has(key)) {
+      throw new ApiError(StatusCodes.BAD_REQUEST, 'Two variants cannot have the identical attribute combination');
+    }
+    combinationSet.add(key);
+  }
+};
+
 const checkSkusUniqueness = async (tx, productSku, variantSkus) => {
   const allSkus = [productSku, ...variantSkus].filter(Boolean);
   
@@ -227,8 +246,13 @@ const createProduct = async (data) => {
 };
 
 const queryProducts = async (filter, options) => {
-  const { page, limit } = getPagination(options.page, options.limit);
-  const { search, categoryId, brandId, isActive } = filter;
+  const { page, limit, skip } = getPagination(options.page, options.limit);
+  const { search, categoryId, brandId, isActive, sortBy = 'createdAt', sortOrder = 'desc' } = filter;
+
+  // Whitelist allowed sort columns
+  const allowedSortBy = ['createdAt', 'name', 'price', 'updatedAt'];
+  const safeSortBy = allowedSortBy.includes(sortBy) ? sortBy : 'createdAt';
+  const safeSortOrder = sortOrder === 'asc' ? 'asc' : 'desc';
 
   const where = {
     ...(isActive !== undefined && { isActive: isActive === 'true' }),
@@ -245,7 +269,7 @@ const queryProducts = async (filter, options) => {
   const [products, total] = await Promise.all([
     prisma.product.findMany({
       where,
-      skip: page,
+      skip,
       take: limit,
       include: {
         brand: { select: { id: true, name: true } },
@@ -258,7 +282,7 @@ const queryProducts = async (filter, options) => {
           select: { price: true, salePrice: true }
         }
       },
-      orderBy: { createdAt: 'desc' },
+      orderBy: { [safeSortBy]: safeSortOrder },
     }),
     prisma.product.count({ where }),
   ]);
@@ -287,6 +311,8 @@ const queryProducts = async (filter, options) => {
       hasVariants: p.hasVariants,
       isActive: p.isActive,
       displayPrice,
+      stock: p.stock,
+      stockStatus: p.stockStatus,
       brand: p.brand,
       categories,
       thumbnail,
@@ -431,9 +457,18 @@ const addVariants = async (id, variants) => {
     const variantSkus = variants.map(v => v.sku);
     await checkSkusUniqueness(tx, null, variantSkus);
 
-    // Validate combinations against existing + new
-    // We would need a more complex validation here, but for brevity, we do basic uniqueness.
-    
+    validateVariantAttributes(variants);
+    validateVariantCombinationsAgainstExisting(product.variants, variants);
+
+    for (const variant of variants) {
+      for (const attr of variant.attributes) {
+        const attributeValue = await tx.attributeValue.findUnique({ where: { id: attr.attributeValueId } });
+        if (!attributeValue) {
+          throw new ApiError(StatusCodes.BAD_REQUEST, `Attribute value '${attr.attributeValueId}' not found`);
+        }
+      }
+    }
+
     for (const variant of variants) {
       const vStockStatus = deriveStockStatus(variant.stock, variant.lowStockThreshold);
       

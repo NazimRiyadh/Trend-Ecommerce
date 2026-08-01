@@ -1,0 +1,73 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 0 0% 11%;
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 11%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 11%;
+    --primary: 210 100% 40%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 240 16% 96%;
+    --secondary-foreground: 0 0% 11%;
+    --muted: 240 16% 96%;
+    --muted-foreground: 0 0% 48%;
+    --accent: 210 100% 40%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 0 0% 94%;
+    --input: 0 0% 94%;
+    --ring: 210 100% 40%;
+    --radius: 0.5rem;
+    
+    /* Apple Custom Tokens */
+    --canvas: 0 0% 100%;
+    --canvas-parchment: 240 11% 96%;
+    --surface-tile-1: 240 3% 15%;
+    --surface-tile-2: 240 2% 17%;
+    --ink: 0 0% 11%;
+  }
+
+  .dark {
+    --background: 240 3% 15%;
+    --foreground: 0 0% 100%;
+    --card: 240 2% 17%;
+    --card-foreground: 0 0% 100%;
+    --popover: 240 3% 15%;
+    --popover-foreground: 0 0% 100%;
+    --primary: 210 100% 58%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 240 3% 20%;
+    --secondary-foreground: 0 0% 100%;
+    --muted: 240 3% 20%;
+    --muted-foreground: 0 0% 80%;
+    --accent: 210 100% 58%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 62% 30%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 240 3% 25%;
+    --input: 240 3% 25%;
+    --ring: 210 100% 58%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-family: "SF Pro Text", system-ui, -apple-system, sans-serif;
+    font-size: 17px;
+    letter-spacing: -0.374px;
+    line-height: 1.47;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    font-family: "SF Pro Display", system-ui, -apple-system, sans-serif;
+  }
+}

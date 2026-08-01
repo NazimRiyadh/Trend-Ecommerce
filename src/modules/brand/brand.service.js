@@ -42,7 +42,7 @@ const createBrand = async (data) => {
 };
 
 const queryBrands = async (filter, options) => {
-  const { page, limit } = getPagination(options.page, options.limit);
+  const { page, limit, skip } = getPagination(options.page, options.limit);
   const { search, status } = filter;
 
   const where = {
@@ -58,14 +58,14 @@ const queryBrands = async (filter, options) => {
   const [brands, total] = await Promise.all([
     prisma.brand.findMany({
       where,
-      skip: page,
+      skip,
       take: limit,
       orderBy: { createdAt: 'desc' },
     }),
     prisma.brand.count({ where }),
   ]);
 
-  return getPagingData(total, options.page, options.limit, brands);
+  return getPagingData(total, page, limit, brands);
 };
 
 const getBrandById = async (id) => {

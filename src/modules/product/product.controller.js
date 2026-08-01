@@ -13,7 +13,9 @@ const getProducts = catchAsync(async (req, res) => {
     search: req.query.search, 
     categoryId: req.query.categoryId,
     brandId: req.query.brandId,
-    isActive: req.query.isActive
+    isActive: req.query.isActive,
+    sortBy: req.query.sortBy,
+    sortOrder: req.query.sortOrder,
   };
   const options = { page: req.query.page, limit: req.query.limit };
   

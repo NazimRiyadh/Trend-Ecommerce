@@ -7,13 +7,14 @@ export const getPagination = (page, limit) => {
   return { limit: limitNumber, skip, page: pageNumber };
 };
 
-export const getPagingData = (totalItems, page, limit) => {
+export const getPagingData = (totalItems, page, limit, data) => {
   const totalPages = Math.ceil(totalItems / limit);
   
   return {
     totalItems,
     totalPages,
     currentPage: page,
-    itemsPerPage: limit
+    itemsPerPage: limit,
+    data
   };
 };

@@ -1,82 +1,109 @@
-import fs from 'fs/promises';
 import path from 'path';
 import crypto from 'crypto';
 import sharp from 'sharp';
 import { fileTypeFromBuffer } from 'file-type';
 import { StatusCodes } from 'http-status-codes';
+import { Readable } from 'stream';
 import ApiError from '../../utils/ApiError.js';
 import prisma from '../../config/prisma.js';
+import cloudinary from '../../config/cloudinary.js';
 import config from '../../config/index.js';
 import { getPagination, getPagingData } from '../../utils/pagination.js';
 
-const generateUniqueFilename = (originalName, ext) => {
+const generatePublicId = (originalName) => {
   const randomStr = crypto.randomBytes(8).toString('hex');
-  const cleanName = originalName.replace(/[^a-zA-Z0-9]/g, '_');
-  return `${Date.now()}-${randomStr}-${cleanName}.${ext}`;
+  const cleanName = path.basename(originalName, path.extname(originalName)).replace(/[^a-zA-Z0-9]/g, '_');
+  return `${Date.now()}-${randomStr}-${cleanName}`;
+};
+
+/**
+ * Upload a Buffer to Cloudinary, returning the secure_url and public_id.
+ */
+const uploadBufferToCloudinary = (buffer, options) => {
+  return new Promise((resolve, reject) => {
+    const uploadStream = cloudinary.uploader.upload_stream(options, (error, result) => {
+      if (error) return reject(error);
+      resolve(result);
+    });
+    Readable.from(buffer).pipe(uploadStream);
+  });
 };
 
 const processAndStoreFile = async (file, userId) => {
   // 1. Magic byte sniffing
   const typeInfo = await fileTypeFromBuffer(file.buffer);
-  
+
   if (!typeInfo) {
     throw new ApiError(StatusCodes.BAD_REQUEST, `Could not determine file type for ${file.originalname}`);
   }
 
   if (!config.upload.allowedMimeTypes.includes(typeInfo.mime)) {
-    throw new ApiError(StatusCodes.BAD_REQUEST, `File type ${typeInfo.mime} not allowed. Allowed types: ${config.upload.allowedMimeTypes.join(', ')}`);
+    throw new ApiError(
+      StatusCodes.BAD_REQUEST,
+      `File type ${typeInfo.mime} not allowed. Allowed types: ${config.upload.allowedMimeTypes.join(', ')}`
+    );
   }
 
   const isImage = typeInfo.mime.startsWith('image/');
   const isVideo = typeInfo.mime.startsWith('video/');
-  
+
   if (!isImage && !isVideo) {
     throw new ApiError(StatusCodes.BAD_REQUEST, 'Only images and videos are supported');
   }
 
-  const ext = typeInfo.ext;
-  const fileName = generateUniqueFilename(file.originalname, ext);
-  const storedPath = path.join(config.upload.dir, fileName);
-  const publicUrl = `/uploads/${fileName}`;
+  const publicId = generatePublicId(file.originalname);
+  const folder = config.cloudinary.folder;
+  const resourceType = isVideo ? 'video' : 'image';
 
-  let width = null;
-  let height = null;
+  // 2. Upload original file to Cloudinary
+  const uploadResult = await uploadBufferToCloudinary(file.buffer, {
+    folder,
+    public_id: publicId,
+    resource_type: resourceType,
+    // Preserve original quality for main asset
+    quality: 'auto',
+  });
+
+  let width = uploadResult.width || null;
+  let height = uploadResult.height || null;
   let thumbnailUrl = null;
+  let cloudinaryThumbId = null;
 
-  // 2. Write main file to disk
-  await fs.writeFile(storedPath, file.buffer);
-
-  // 3. Process image specific data (dimensions, thumbnail)
+  // 3. For images: generate 200x200 thumbnail in memory and upload separately
   if (isImage) {
-    const metadata = await sharp(file.buffer).metadata();
-    width = metadata.width;
-    height = metadata.height;
-
-    // Generate 200x200 thumbnail
-    const thumbName = `thumb-${fileName}`;
-    const thumbPath = path.join(config.upload.dir, thumbName);
-    
-    await sharp(file.buffer)
+    const thumbBuffer = await sharp(file.buffer)
       .resize(200, 200, { fit: 'cover' })
-      .toFile(thumbPath);
+      .toFormat('webp')
+      .toBuffer();
 
-    thumbnailUrl = `/uploads/${thumbName}`;
+    const thumbPublicId = `thumb-${publicId}`;
+    const thumbResult = await uploadBufferToCloudinary(thumbBuffer, {
+      folder: `${folder}/thumbs`,
+      public_id: thumbPublicId,
+      resource_type: 'image',
+      format: 'webp',
+    });
+
+    thumbnailUrl = thumbResult.secure_url;
+    cloudinaryThumbId = thumbResult.public_id;
   }
 
   // 4. Create DB record
   const mediaRecord = await prisma.media.create({
     data: {
       fileName: file.originalname,
-      storedPath,
-      publicUrl,
+      storedPath: uploadResult.public_id, // Cloudinary public_id used as storedPath for compatibility
+      publicUrl: uploadResult.secure_url,
       mimeType: typeInfo.mime,
       type: isImage ? 'image' : 'video',
       size: file.size,
       width,
       height,
       thumbnailUrl,
+      cloudinaryId: uploadResult.public_id,
+      cloudinaryThumbId,
       uploadedById: userId,
-    }
+    },
   });
 
   return mediaRecord;
@@ -87,7 +114,7 @@ const uploadFiles = async (files, userId) => {
     throw new ApiError(StatusCodes.BAD_REQUEST, 'No files provided');
   }
 
-  const uploadPromises = files.map(file => processAndStoreFile(file, userId));
+  const uploadPromises = files.map((file) => processAndStoreFile(file, userId));
   const results = await Promise.allSettled(uploadPromises);
 
   const successful = [];
@@ -99,7 +126,7 @@ const uploadFiles = async (files, userId) => {
     } else {
       failed.push({
         fileName: files[index].originalname,
-        error: result.reason.message
+        error: result.reason.message,
       });
     }
   });
@@ -110,12 +137,12 @@ const uploadFiles = async (files, userId) => {
 
   return {
     successful,
-    failed: failed.length > 0 ? failed : undefined
+    failed: failed.length > 0 ? failed : undefined,
   };
 };
 
 const queryMedia = async (filter, options) => {
-  const { page, limit } = getPagination(options.page, options.limit);
+  const { page, limit, skip } = getPagination(options.page, options.limit);
   const { search, type } = filter;
 
   const where = {
@@ -132,23 +159,23 @@ const queryMedia = async (filter, options) => {
   const [media, total] = await Promise.all([
     prisma.media.findMany({
       where,
-      skip: page,
+      skip,
       take: limit,
       include: {
-        uploadedBy: { select: { id: true, name: true } }
+        uploadedBy: { select: { id: true, name: true } },
       },
-      orderBy: { createdAt: 'desc' }
+      orderBy: { createdAt: 'desc' },
     }),
-    prisma.media.count({ where })
+    prisma.media.count({ where }),
   ]);
 
-  return getPagingData(total, options.page, options.limit, media);
+  return getPagingData(total, page, limit, media);
 };
 
 const getMediaById = async (id) => {
   const media = await prisma.media.findUnique({
     where: { id },
-    include: { uploadedBy: { select: { name: true } } }
+    include: { uploadedBy: { select: { name: true } } },
   });
 
   if (!media) {
@@ -163,7 +190,7 @@ const updateMedia = async (id, updateBody) => {
 
   return prisma.media.update({
     where: { id: media.id },
-    data: updateBody
+    data: updateBody,
   });
 };
 
@@ -172,29 +199,30 @@ const deleteMedia = async (id) => {
 
   // Check if attached to any product (prevent dangling references)
   const attachments = await prisma.productMedia.count({
-    where: { mediaId: id }
+    where: { mediaId: id },
   });
 
   if (attachments > 0) {
     throw new ApiError(
-      StatusCodes.CONFLICT, 
+      StatusCodes.CONFLICT,
       `Cannot delete media. It is currently attached to ${attachments} product(s).`
     );
   }
 
-  // Delete from DB first
+  // Delete DB record first
   await prisma.media.delete({ where: { id } });
 
-  // Then delete files from disk
+  // Then remove from Cloudinary (best-effort, don't fail if already gone)
   try {
-    await fs.unlink(media.storedPath);
-    if (media.thumbnailUrl) {
-      const thumbFileName = path.basename(media.thumbnailUrl);
-      await fs.unlink(path.join(config.upload.dir, thumbFileName));
+    if (media.cloudinaryId) {
+      const resourceType = media.type === 'video' ? 'video' : 'image';
+      await cloudinary.uploader.destroy(media.cloudinaryId, { resource_type: resourceType });
+    }
+    if (media.cloudinaryThumbId) {
+      await cloudinary.uploader.destroy(media.cloudinaryThumbId, { resource_type: 'image' });
     }
   } catch (error) {
-    // We log it but don't fail the request since DB record is gone
-    console.error(`Failed to delete file from disk: ${error.message}`);
+    console.error(`Failed to delete asset from Cloudinary: ${error.message}`);
   }
 };
 

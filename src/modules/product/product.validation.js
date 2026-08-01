@@ -3,6 +3,7 @@ import Joi from 'joi';
 const createProduct = {
   body: Joi.object().keys({
     name: Joi.string().required(),
+    slug: Joi.string().lowercase().trim(),
     sku: Joi.string().required(),
     shortDescription: Joi.string().allow('', null),
     longDescription: Joi.string().allow('', null),
@@ -12,7 +13,7 @@ const createProduct = {
       then: Joi.required(),
       otherwise: Joi.forbidden(),
     }),
-    salePrice: Joi.number().min(0).less(Joi.ref('price')).allow(null).when('hasVariants', {
+    salePrice: Joi.number().min(0).max(Joi.ref('price')).allow(null).when('hasVariants', {
       is: true,
       then: Joi.forbidden(),
     }),
@@ -39,7 +40,7 @@ const createProduct = {
       Joi.object().keys({
         sku: Joi.string().required(),
         price: Joi.number().min(0).required(),
-        salePrice: Joi.number().min(0).less(Joi.ref('price')).allow(null),
+        salePrice: Joi.number().min(0).max(Joi.ref('price')).allow(null),
         stock: Joi.number().integer().min(0).required(),
         lowStockThreshold: Joi.number().integer().min(0).default(5),
         weight: Joi.number().min(0).allow(null),
@@ -64,11 +65,12 @@ const updateProduct = {
   }),
   body: Joi.object().keys({
     name: Joi.string(),
+    slug: Joi.string().lowercase().trim(),
     sku: Joi.string(),
     shortDescription: Joi.string().allow('', null),
     longDescription: Joi.string().allow('', null),
     price: Joi.number().min(0),
-    salePrice: Joi.number().min(0).less(Joi.ref('price')).allow(null),
+    salePrice: Joi.number().min(0).max(Joi.ref('price')).allow(null),
     stock: Joi.number().integer().min(0),
     weight: Joi.number().min(0).allow(null),
     isActive: Joi.boolean(),
@@ -99,7 +101,7 @@ const addVariants = {
     Joi.object().keys({
       sku: Joi.string().required(),
       price: Joi.number().min(0).required(),
-      salePrice: Joi.number().min(0).less(Joi.ref('price')).allow(null),
+      salePrice: Joi.number().min(0).max(Joi.ref('price')).allow(null),
       stock: Joi.number().integer().min(0).required(),
       lowStockThreshold: Joi.number().integer().min(0).default(5),
       weight: Joi.number().min(0).allow(null),
@@ -121,7 +123,7 @@ const updateVariant = {
   body: Joi.object().keys({
     sku: Joi.string(),
     price: Joi.number().min(0),
-    salePrice: Joi.number().min(0).less(Joi.ref('price')).allow(null),
+    salePrice: Joi.number().min(0).max(Joi.ref('price')).allow(null),
     stock: Joi.number().integer().min(0),
     lowStockThreshold: Joi.number().integer().min(0),
     weight: Joi.number().min(0).allow(null),
@@ -169,6 +171,19 @@ const deleteMediaAttachment = {
   }),
 };
 
+const listProducts = {
+  query: Joi.object().keys({
+    page: Joi.number().integer().min(1).default(1),
+    limit: Joi.number().integer().min(1).max(100).default(10),
+    search: Joi.string().allow('', null),
+    categoryId: Joi.string().allow('', null),
+    brandId: Joi.string().allow('', null),
+    isActive: Joi.string().valid('true', 'false').allow('', null),
+    sortBy: Joi.string().valid('createdAt', 'name', 'price', 'updatedAt').default('createdAt'),
+    sortOrder: Joi.string().valid('asc', 'desc').default('desc'),
+  }),
+};
+
 export default {
   createProduct,
   updateProduct,
@@ -180,4 +195,5 @@ export default {
   addMedia,
   updateMediaAttachment,
   deleteMediaAttachment,
+  listProducts,
 };

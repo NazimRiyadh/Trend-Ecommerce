@@ -33,9 +33,19 @@ const deleteBrand = {
   }),
 };
 
+const listBrands = {
+  query: Joi.object().keys({
+    page: Joi.number().integer().min(1).default(1),
+    limit: Joi.number().integer().min(1).max(100).default(10),
+    search: Joi.string().allow('', null),
+    status: Joi.string().valid('active', 'inactive').allow('', null),
+  }),
+};
+
 export default {
   createBrand,
   updateBrand,
   getBrand,
   deleteBrand,
+  listBrands,
 };

@@ -60,7 +60,7 @@ const createAttribute = async (data) => {
 };
 
 const queryAttributes = async (filter, options) => {
-  const { page, limit } = getPagination(options.page, options.limit);
+  const { page, limit, skip } = getPagination(options.page, options.limit);
   const { search, type } = filter;
 
   const where = {
@@ -75,7 +75,7 @@ const queryAttributes = async (filter, options) => {
   const [attributes, total] = await Promise.all([
     prisma.attribute.findMany({
       where,
-      skip: page,
+      skip,
       take: limit,
       include: { values: true },
       orderBy: { createdAt: 'desc' },
@@ -185,6 +185,77 @@ const updateAttribute = async (id, updateBody) => {
   });
 };
 
+const addAttributeValue = async (attributeId, data) => {
+  const attribute = await prisma.attribute.findUnique({ where: { id: attributeId } });
+  if (!attribute) {
+    throw new ApiError(StatusCodes.NOT_FOUND, 'Attribute not found');
+  }
+
+  const valueSlug = slugify(data.value);
+  const existing = await prisma.attributeValue.findFirst({
+    where: { attributeId, slug: valueSlug },
+  });
+  if (existing) {
+    throw new ApiError(StatusCodes.CONFLICT, `Value '${data.value}' already exists for this attribute`);
+  }
+
+  return prisma.attributeValue.create({
+    data: {
+      attributeId,
+      value: data.value,
+      slug: valueSlug,
+      referenceValue: data.referenceValue,
+    },
+  });
+};
+
+const updateAttributeValue = async (attributeId, valueId, updateBody) => {
+  const value = await prisma.attributeValue.findFirst({
+    where: { id: valueId, attributeId },
+  });
+  if (!value) {
+    throw new ApiError(StatusCodes.NOT_FOUND, 'Attribute value not found');
+  }
+
+  const data = { ...updateBody };
+  if (updateBody.value && updateBody.value !== value.value) {
+    const valueSlug = slugify(updateBody.value);
+    const clash = await prisma.attributeValue.findFirst({
+      where: { attributeId, slug: valueSlug, id: { not: valueId } },
+    });
+    if (clash) {
+      throw new ApiError(StatusCodes.CONFLICT, `Value '${updateBody.value}' already exists for this attribute`);
+    }
+    data.slug = valueSlug;
+  }
+
+  return prisma.attributeValue.update({
+    where: { id: valueId },
+    data,
+  });
+};
+
+const deleteAttributeValue = async (attributeId, valueId) => {
+  const value = await prisma.attributeValue.findFirst({
+    where: { id: valueId, attributeId },
+  });
+  if (!value) {
+    throw new ApiError(StatusCodes.NOT_FOUND, 'Attribute value not found');
+  }
+
+  const usedCount = await prisma.variantAttributeValue.count({
+    where: { attributeValueId: valueId },
+  });
+  if (usedCount > 0) {
+    throw new ApiError(
+      StatusCodes.CONFLICT,
+      `Cannot remove value '${value.value}' as it is used by a product variant`,
+    );
+  }
+
+  await prisma.attributeValue.delete({ where: { id: valueId } });
+};
+
 const deleteAttribute = async (id) => {
   const attribute = await prisma.attribute.findUnique({
     where: { id },
@@ -227,4 +298,7 @@ export default {
   getAttributeById,
   updateAttribute,
   deleteAttribute,
+  addAttributeValue,
+  updateAttributeValue,
+  deleteAttributeValue,
 };

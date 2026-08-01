@@ -34,7 +34,7 @@ const createUser = async (data) => {
 };
 
 const queryUsers = async (filter, options) => {
-  const { page, limit } = getPagination(options.page, options.limit);
+  const { page, limit, skip } = getPagination(options.page, options.limit);
   const { search, roleId, isActive } = filter;
 
   const where = {
@@ -51,7 +51,7 @@ const queryUsers = async (filter, options) => {
   const [users, total] = await Promise.all([
     prisma.user.findMany({
       where,
-      skip: page,
+      skip,
       take: limit,
       include: {
         role: { select: { id: true, name: true } }
@@ -66,7 +66,7 @@ const queryUsers = async (filter, options) => {
     return rest;
   });
 
-  return getPagingData(total, options.page, options.limit, usersResponse);
+  return getPagingData(total, page, limit, usersResponse);
 };
 
 const getUserById = async (id) => {

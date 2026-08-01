@@ -37,10 +37,28 @@ const deleteAttribute = catchAsync(async (req, res) => {
   res.status(StatusCodes.OK).json(new ApiResponse(StatusCodes.OK, 'Attribute deleted successfully'));
 });
 
+const addAttributeValue = catchAsync(async (req, res) => {
+  const value = await attributeService.addAttributeValue(req.params.id, req.body);
+  res.status(StatusCodes.CREATED).json(new ApiResponse(StatusCodes.CREATED, 'Attribute value created successfully', value));
+});
+
+const updateAttributeValue = catchAsync(async (req, res) => {
+  const value = await attributeService.updateAttributeValue(req.params.id, req.params.valueId, req.body);
+  res.status(StatusCodes.OK).json(new ApiResponse(StatusCodes.OK, 'Attribute value updated successfully', value));
+});
+
+const deleteAttributeValue = catchAsync(async (req, res) => {
+  await attributeService.deleteAttributeValue(req.params.id, req.params.valueId);
+  res.status(StatusCodes.OK).json(new ApiResponse(StatusCodes.OK, 'Attribute value deleted successfully'));
+});
+
 export default {
   createAttribute,
   getAttributes,
   getAttribute,
   updateAttribute,
   deleteAttribute,
+  addAttributeValue,
+  updateAttributeValue,
+  deleteAttributeValue,
 };

@@ -42,9 +42,40 @@ const deleteAttribute = {
   }),
 };
 
+const addAttributeValue = {
+  params: Joi.object().keys({
+    id: Joi.string().required(),
+  }),
+  body: Joi.object().keys({
+    value: Joi.string().required(),
+    referenceValue: Joi.string().allow('', null),
+  }),
+};
+
+const updateAttributeValue = {
+  params: Joi.object().keys({
+    id: Joi.string().required(),
+    valueId: Joi.string().required(),
+  }),
+  body: Joi.object().keys({
+    value: Joi.string(),
+    referenceValue: Joi.string().allow('', null),
+  }).min(1),
+};
+
+const deleteAttributeValue = {
+  params: Joi.object().keys({
+    id: Joi.string().required(),
+    valueId: Joi.string().required(),
+  }),
+};
+
 export default {
   createAttribute,
   updateAttribute,
   getAttribute,
   deleteAttribute,
+  addAttributeValue,
+  updateAttributeValue,
+  deleteAttributeValue,
 };

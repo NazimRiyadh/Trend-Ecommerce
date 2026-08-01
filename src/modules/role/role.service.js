@@ -50,7 +50,7 @@ const createRole = async (data) => {
 };
 
 const queryRoles = async (filter, options) => {
-  const { page, limit } = getPagination(options.page, options.limit);
+  const { page, limit, skip } = getPagination(options.page, options.limit);
   const { search } = filter;
 
   const where = search
@@ -65,7 +65,7 @@ const queryRoles = async (filter, options) => {
   const [roles, total] = await Promise.all([
     prisma.role.findMany({
       where,
-      skip: page,
+      skip,
       take: limit,
       include: {
         _count: {
@@ -77,7 +77,7 @@ const queryRoles = async (filter, options) => {
     prisma.role.count({ where }),
   ]);
 
-  return getPagingData(total, options.page, options.limit, roles);
+  return getPagingData(total, page, limit, roles);
 };
 
 const getRoleById = async (id) => {
